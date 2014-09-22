@@ -6,7 +6,7 @@
 
 
 #include <Servo.h>
-Servo Throttle, Aile, Elev, Rudd, Aux1;
+Servo Throttle, Aile, Elev, Rudd, Aux1, Aux2;
 
 //Create variables for 6 channels
 int RXCH[6]; 
@@ -25,7 +25,8 @@ void setup() {
   RXCH[1] = 4; //Aile / Yaw
   RXCH[2] = 7; //Elev. / Pitch
   RXCH[3] = 8;  //Rudd. / Roll
-  RXCH[4] = 12;  //Aux
+  RXCH[4] = 12;  //Aux1
+  RXCH[5] = 13;  //Aux2
   
   //Assign PWM Transmitter pins (must have '~' symbol on pin to use):
   
@@ -34,6 +35,7 @@ void setup() {
   TXCH[2] = 6; //Elev. / Pitch
   TXCH[3] = 9;  //Rudd. / Roll
   TXCH[4] = 10;  //Aux1
+  TXCH[5] = 11; //Aux2
   
   //Attach pins to correct variable
   Throttle.attach(TXCH[0]);
@@ -41,9 +43,10 @@ void setup() {
   Elev.attach(TXCH[2]);
   Rudd.attach(TXCH[3]);
   Aux1.attach(TXCH[4]);
+  Aux2.attach(TXCH[5]);
  
   
-  for (int i = 0; i < 4; i++){
+  for (int i = 0; i < 5; i++){
     pinMode(RXCH[i], INPUT);
   }
 }
@@ -51,7 +54,7 @@ void setup() {
 void loop() {
   
 // Read RX values 
-  for (int i = 0; i < 4; i++){                                        //for each of the 6 channels: 
+  for (int i = 0; i < 5; i++){                                        //for each of the 6 channels: 
   RXSG[i] = pulseIn(RXCH[i], HIGH, 20000);                            //read the receiver signal
   if (RXSG[i] == 0) {RXSG[i] = RXOK[i];} else {RXOK[i] = RXSG[i];}    //if the signal is good then use it, else use the previous signal
   PWMSG[i] = map(RXSG[i], 1000, 2000, 1000, 2000);                        //substitute the high values to a value between 0 and 511
@@ -75,6 +78,7 @@ void loop() {
   Elev.writeMicroseconds(PWMSG[2]);
   Rudd.writeMicroseconds(PWMSG[3]);
   Aux1.writeMicroseconds(PWMSG[4]);
+  Aux2.writeMicroseconds(PWSMSG[5]);
  }
  Serial.println();
 }
